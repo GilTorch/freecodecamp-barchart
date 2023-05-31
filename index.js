@@ -54,12 +54,14 @@ const init = async () => {
   // place x axis 
   svg.append("g")
      .attr("transform",`translate(0,${height - margin.bottom})`)
+     .attr("id","x-axis")
      .call(xAxis)
 
   // place y axis 
   svg.append("g")
     .attr("transform",`translate(${margin.left},0)`)
-     .call(yAxis)
+    .attr("id","y-axis")
+    .call(yAxis)
 
   svg.selectAll("rect")
      .data(dataset)
