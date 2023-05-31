@@ -1,3 +1,17 @@
 body {
     background-color: white;
+    margin: 0; 
+}
+
+h1{
+    text-align: center;
+}
+
+.bar-chart{
+    position: absolute; 
+    width: 70%;
+    height: 70%;
+    left: 50%; 
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

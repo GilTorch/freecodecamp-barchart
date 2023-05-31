@@ -18,12 +18,13 @@ const init = async () => {
     right: 50
   }
 
-  const width = 600
-  const height = 500
+  const width = window.innerWidth*0.7
+  const height = window.innerHeight*0.7
 
   // create svg
   const svg = d3.select('body')
     .append('svg')
+    .attr('class', 'bar-chart')
     .attr("width",width - margin.right - margin.left)
     .attr("height",height - margin.top - margin.bottom)
     .attr("viewBox", [0,0, width, height])
@@ -32,23 +33,23 @@ const init = async () => {
 
 
   // scale
-  const xScale = d3.scaleBand(
-    dataset.map(element => element[0].split("-")[0]),
-    [margin.left,width - margin.right]
-  )
+  const xScale = d3.scaleBand()
+    .domain(dataset.map(element => element[0].split("-")[0]))
+    .range([margin.left,width - margin.right])
 
 
-  const yScale = d3.scaleLinear(
-    [0, d3.max(dataset.map(element => element[1]))],
-    [height - margin.bottom,margin.top]
-  )
+
+  const yScale = d3.scaleLinear()
+    .domain([0, d3.max(dataset.map(element => element[1]))])
+    .range([height - margin.bottom,margin.top])
+  
 
 
   // axis 
-  const xAxis = d3.axisBottom(xScale).tickValues(xScale.domain().filter((e,i)=>{
-    return parseInt(e)%5==0
-  }));
 
+  const xAxis = d3.axisBottom(xScale)
+                  .tickValues(xScale.domain().filter(e=>parseInt(e)%5==0))
+            
   const yAxis = d3.axisLeft(yScale)
 
   // place x axis 
