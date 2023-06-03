@@ -8,9 +8,6 @@ const getData = async () =>{
 const init = async () => {
   const data = await getData();
   const dataset = data.data 
-  console.log(`Data: ${JSON.stringify(dataset)}`);
-  
-
   const margin = {
     top: 50,
     bottom: 50,
@@ -22,14 +19,11 @@ const init = async () => {
   const height = window.innerHeight*0.7
 
   // create svg
-  const svg = d3.select('body')
+  const svg = d3.select('.bar-chart')
     .append('svg')
-    .attr('class', 'bar-chart')
     .attr("width",width - margin.right - margin.left)
     .attr("height",height - margin.top - margin.bottom)
     .attr("viewBox", [0,0, width, height])
-
-
 
 
   // scale
@@ -42,8 +36,6 @@ const init = async () => {
   const yScale = d3.scaleLinear()
     .domain([0, d3.max(dataset.map(element => element[1]))])
     .range([height - margin.bottom,margin.top])
-  
-
 
   // axis 
 
@@ -64,6 +56,14 @@ const init = async () => {
     .attr("id","y-axis")
     .call(yAxis)
 
+  svg.append('text')
+    .text('Gross Domestic Product')
+    .attr('x',margin.left + 90)
+    .attr('y', -margin.left - 20)
+    .attr('class','axis-left-label')
+    .attr('transform', 'rotate(90)')
+
+
   svg.selectAll("rect")
      .data(dataset)
      .enter()
@@ -74,7 +74,7 @@ const init = async () => {
      })
      .attr("y", d => yScale(d[1]))
      .attr("width", xScale.bandwidth())
-     .attr("height", d => height - margin.bottom - yScale(d[1]))
+     .attr("height", d => height - yScale(d[1]) - margin.bottom)
 
 }
 
