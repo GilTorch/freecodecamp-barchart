@@ -28,7 +28,7 @@ h1{
 }
 
 .bar-chart{
-    background-color: white;
+    background-color: rgba(255,255,255,0.5);
     padding: 1%;
     position: absolute; 
     width: 70%;
@@ -37,8 +37,8 @@ h1{
     top: 50%;
     transform: translate(-50%, -50%);
     box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
--webkit-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
--moz-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
+    -webkit-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
+    -moz-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
 }
 
 .spacer{
@@ -56,4 +56,25 @@ h1{
 
 .axis-left-label{
     font-size: 1.5rem;
+}
+
+.bar:hover{
+    fill: gray;
+}
+
+
+.tooltip1{
+    background-color: white;
+    width: 100px;
+    height: 80px;
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%,-50%);
+    border: 1px solid black;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding: 1%;
+    border-radius: 1rem;
 }

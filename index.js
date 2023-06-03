@@ -24,6 +24,8 @@ const init = async () => {
     .attr("width",width - margin.right - margin.left)
     .attr("height",height - margin.top - margin.bottom)
     .attr("viewBox", [0,0, width, height])
+    // .attr('stroke-color','black')
+    // .style('z-index', 100)
 
 
   // scale
@@ -56,18 +58,54 @@ const init = async () => {
     .attr("id","y-axis")
     .call(yAxis)
 
+  // y axis text label
   svg.append('text')
     .text('Gross Domestic Product')
-    .attr('x',margin.left + 90)
-    .attr('y', -margin.left - 20)
+    .attr('x',-(margin.left + height)/2)
+    .attr('y', -(-margin.left - 30))
     .attr('class','axis-left-label')
-    .attr('transform', 'rotate(90)')
+    .attr('transform', 'rotate(-90)')
 
 
-  svg.selectAll("rect")
+
+  const toolTipWidth = width*0.2;
+  const toolTipHeight = height*0.2;
+
+  const tooltipGroup = svg.append('g')
+
+  const tooltip = tooltipGroup
+    .append("rect")
+    .attr('class','tooltip')
+    .attr('width', toolTipWidth)
+    .attr('height', toolTipHeight)
+    .attr('fill','rgba(255,255,255,0.5)')
+    .attr('x', 16)
+    .attr('y', 16)
+    .attr('stroke-width', 1)
+
+    const tooltipGroupText = tooltipGroup.append("text")
+
+  tooltipGroupText 
+  .attr('x',toolTipWidth/2)
+  .attr('y',toolTipHeight/2)
+  .attr('transform', 'translate(-50%,-50%)')
+
+  svg.selectAll(".bar")
      .data(dataset)
-     .enter()
-     .append("rect")
+     .join("rect")
+     .on('mouseover', (_,d) => {
+      const year = d[0].split("-")[0];
+      tooltipGroupText
+      .text(`Year: ${year}\n GDP: ${d[1]} Billion`)
+       tooltipGroupText.attr('x', xScale(year) - 100)
+       tooltipGroupText.attr('y', height/2 + toolTipHeight /2)
+       tooltip.attr('x', xScale(year) - toolTipWidth/2)
+       tooltip.attr('y', height/2)
+      //  tooltip.attr('transform', `translate(${xScale(year)},${yScale(d[1])})`)
+     })
+     .attr('class','bar')
+     .attr('data-date',d => d[0].split('-')[0])
+     .attr('data-gdp',d => d[1])
      .attr("x",d => { 
          const year = d[0].split("-")[0];
          return xScale(year);
@@ -75,6 +113,8 @@ const init = async () => {
      .attr("y", d => yScale(d[1]))
      .attr("width", xScale.bandwidth())
      .attr("height", d => height - yScale(d[1]) - margin.bottom)
+  
+ 
 
 }
 
