@@ -44,13 +44,14 @@ const init = async () => {
     currentYear = year;
     return {
       year: `${year} Q${currentQuarter}`,
+      fullYear: data[0],
       gdp: data[1]
     }
   })
 
   // scale
   const xScale = d3.scaleBand()
-    .domain(datasetProcessed.map(d => d.year))
+    .domain(datasetProcessed.map(d => d.fullYear))
     .range([margin.left,width - margin.right])
 
   const yScale = d3.scaleLinear()
@@ -59,16 +60,21 @@ const init = async () => {
 
   // axis 
 
+  const yearAlreadyAdded = []
+
   const xAxis = d3.axisBottom(xScale)
                   .tickFormat((d,i) => {
-                    if(d.includes("Q2") || d.includes("Q3") || d.includes("Q4")){
+                    const year = getYear(d);
+                    if(parseInt(year) %5 !== 0){
                       return null
                     }
 
-                    if(parseInt(d) %5 !== 0){
+                    if(yearAlreadyAdded.includes(year)){
                       return null
                     }
-                    return d.replace(/Q[0-9]/,"")
+
+                    yearAlreadyAdded.push(year)
+                    return year
                   })
                   .tickSizeOuter(0)
   
@@ -107,14 +113,15 @@ const init = async () => {
       tooltipDescription.text(`GDP: ${d.gdp} Billions`)
       tooltip.style('left', `${margin.left + xScale(d.year)}`)
       tooltip.style('opacity',1);
+      tooltip.attr('data-date',d.fullYear)
      })
      .on('mouseout', () => {
       tooltip.style('opacity',0)
     })
      .attr('class','bar')
-     .attr('data-date',d => d.year.replace(/Q[0-9]/,""))
+     .attr('data-date',d => d.fullYear)
      .attr('data-gdp',d => d.gdp)
-     .attr("x",d => xScale(d.year))
+     .attr("x",d => xScale(d.fullYear))
      .attr("y", d => yScale(d.gdp))
      .attr("width", xScale.bandwidth())
      .attr("height", d => height - yScale(d.gdp) - margin.bottom)
