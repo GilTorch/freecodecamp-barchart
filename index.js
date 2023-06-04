@@ -1,13 +1,8 @@
 
-const getData = async () =>{
-  const response = await fetch("https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json")
-  const jsonData = await response.json();
-  return jsonData;
-}
+const URL = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json"
 
-const init = async () => {
-  const data = await getData();
-  const dataset = data.data 
+d3.json(URL).then((res) => {
+  const dataset = res.data 
   const margin = {
     top: 50,
     bottom: 50,
@@ -125,6 +120,5 @@ const init = async () => {
      .attr("y", d => yScale(d.gdp))
      .attr("width", xScale.bandwidth())
      .attr("height", d => height - yScale(d.gdp) - margin.bottom)
-}
+})
 
-init()
