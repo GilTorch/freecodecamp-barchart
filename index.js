@@ -104,7 +104,7 @@ const init = async () => {
      .join("rect")
      .on('mouseover', (_,d) => {
       tooltipTitle.text(`Year: ${d.year}`)
-      tooltipDescription.text(`GDP: ${d.gdp}`)
+      tooltipDescription.text(`GDP: ${d.gdp} Billions`)
       tooltip.style('left', `${margin.left + xScale(d.year)}`)
       tooltip.style('opacity',1);
      })
