@@ -10,15 +10,18 @@ d3.json(URL).then((res) => {
     right: 50
   }
 
-  const width = window.innerWidth*0.7
-  const height = window.innerHeight*0.7
+  const viewBoxWidth = window.innerWidth*0.7
+  const viewBoxHeight = window.innerHeight*0.7
+
+  const svgWidth = viewBoxWidth - margin.right - margin.left ;
+  const svgHeight = viewBoxHeight - margin.top - margin.bottom;
 
   // create svg
   const svg = d3.select('.bar-chart')
     .append('svg')
-    .attr("width",width - margin.right - margin.left)
-    .attr("height",height - margin.top - margin.bottom)
-    .attr("viewBox", [0,0, width, height])
+    .attr("width",svgWidth)
+    .attr("height",svgHeight)
+    .attr("viewBox", [0,0, viewBoxWidth, viewBoxHeight])
 
   // retain only the year with the greatest value
 
@@ -45,32 +48,18 @@ d3.json(URL).then((res) => {
   })
 
   // scale
-  const xScale = d3.scaleBand()
-    .domain(datasetProcessed.map(d => d.fullYear))
-    .range([margin.left,width - margin.right])
+  const dataExtentDate = d3.extent(dataset, d => d[0])
+  const xScale = d3.scaleTime()
+    .domain([new Date(dataExtentDate[0]), new Date(dataExtentDate[1])])
+    .range([margin.left,viewBoxWidth - margin.right])
+
 
   const yScale = d3.scaleLinear()
     .domain([0, d3.max(dataset.map(element => element[1]))])
-    .range([height - margin.bottom,margin.top])
+    .range([viewBoxHeight - margin.bottom,margin.top])
 
   // axis 
-
-  const yearAlreadyAdded = []
-
   const xAxis = d3.axisBottom(xScale)
-                  .tickFormat((d,i) => {
-                    const year = getYear(d);
-                    if(parseInt(year) %5 !== 0){
-                      return null
-                    }
-
-                    if(yearAlreadyAdded.includes(year)){
-                      return null
-                    }
-
-                    yearAlreadyAdded.push(year)
-                    return year
-                  })
                   .tickSizeOuter(0)
   
   const yAxis = d3.axisLeft(yScale)
@@ -78,7 +67,7 @@ d3.json(URL).then((res) => {
 
   // place x axis 
   svg.append("g")
-     .attr("transform",`translate(0,${height - margin.bottom})`)
+     .attr("transform",`translate(0,${viewBoxHeight - margin.bottom})`)
      .attr("id","x-axis")
      .call(xAxis)
 
@@ -91,7 +80,7 @@ d3.json(URL).then((res) => {
   // y axis text label
   svg.append('text')
     .text('Gross Domestic Product')
-    .attr('x',-(margin.left + height)/2)
+    .attr('x',-(margin.left + viewBoxHeight)/2)
     .attr('y', -(-margin.left - 30))
     .attr('class','axis-left-label')
     .attr('transform', 'rotate(-90)')
@@ -116,9 +105,9 @@ d3.json(URL).then((res) => {
      .attr('class','bar')
      .attr('data-date',d => d.fullYear)
      .attr('data-gdp',d => d.gdp)
-     .attr("x",d => xScale(d.fullYear))
+     .attr("x",d =>xScale(new Date(d.fullYear)))
      .attr("y", d => yScale(d.gdp))
-     .attr("width", xScale.bandwidth())
-     .attr("height", d => height - yScale(d.gdp) - margin.bottom)
+     .attr("width", svgWidth / dataset.length)
+     .attr("height", d => viewBoxHeight - yScale(d.gdp) - margin.bottom)
 })
 
