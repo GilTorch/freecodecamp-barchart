@@ -16,6 +16,14 @@ d3.json(URL).then((res) => {
   const svgWidth = viewBoxWidth - margin.right - margin.left ;
   const svgHeight = viewBoxHeight - margin.top - margin.bottom;
 
+
+let globalMousePos = { x: undefined, y: undefined };
+
+window.addEventListener('mousemove', (event) => {
+  globalMousePos = { x: event.clientX, y: event.clientY };
+});
+
+
   // create svg
   const svg = d3.select('.bar-chart')
     .append('svg')
@@ -95,8 +103,10 @@ d3.json(URL).then((res) => {
      .on('mouseover', (_,d) => {
       tooltipTitle.text(`Year: ${d.year}`)
       tooltipDescription.text(`GDP: ${d.gdp} Billions`)
-      tooltip.style('left', `${margin.left + xScale(d.year)}`)
+      console.log(xScale(new Date(d.fullYear)))
       tooltip.style('opacity',1);
+      tooltip.style('top', viewBoxHeight - margin.bottom + 'px')
+      tooltip.style('left', globalMousePos.x+'px')
       tooltip.attr('data-date',d.fullYear)
      })
      .on('mouseout', () => {

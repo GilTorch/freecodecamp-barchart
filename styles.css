@@ -1,26 +1,7 @@
 body {
     background-color: #2E957C;
     margin: 0; 
-}
-
-.custom-shape-divider-top-1685505162 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-}
-
-.custom-shape-divider-top-1685505162 svg {
-    position: relative;
-    display: block;
-    width: calc(155% + 1.3px);
-    height: 106px;
-}
-
-.custom-shape-divider-top-1685505162 .shape-fill {
-    fill: #FFFFFF;
+    font-family: 'Montserrat', sans-serif;
 }
 
 h1{
@@ -40,19 +21,6 @@ h1{
     -webkit-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
     -moz-box-shadow: -9px 2px 45px 1px rgba(0,0,0,0.79);
 }
-
-.spacer{
-    aspect-ratio: 960/300;
-    width: 100%;
-    background-repeat: no-repeat;
-    background-size: cover; 
-    background-position: center;
-}
-
-.layer1{
-    background-image: url('./layer1.svg');
-}
-
 
 .axis-left-label{
     font-size: 1.5rem;
