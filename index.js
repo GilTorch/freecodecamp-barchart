@@ -24,16 +24,34 @@ const init = async () => {
     .attr("width",width - margin.right - margin.left)
     .attr("height",height - margin.top - margin.bottom)
     .attr("viewBox", [0,0, width, height])
-    // .attr('stroke-color','black')
-    // .style('z-index', 100)
 
+  // retain only the year with the greatest value
+
+  const getYear = data => data.split("-")[0]
+
+  let currentQuarter = 0;
+  let currentYear = dataset.map(data => getYear(data[0]))[0]
+
+  const datasetProcessed = dataset.map((data) => {
+    // each time the same year is encountered it's a new quarter
+    // append the quarter after the year with label Qnumber
+    const year = getYear(data[0])
+    if(year === currentYear){
+      currentQuarter++
+    }else{
+      currentQuarter = 1;
+    } 
+    currentYear = year;
+    return {
+      year: `${year} Q${currentQuarter}`,
+      gdp: data[1]
+    }
+  })
 
   // scale
   const xScale = d3.scaleBand()
-    .domain(dataset.map(element => element[0].split("-")[0]))
+    .domain(datasetProcessed.map(d => d.year))
     .range([margin.left,width - margin.right])
-
-
 
   const yScale = d3.scaleLinear()
     .domain([0, d3.max(dataset.map(element => element[1]))])
@@ -42,9 +60,20 @@ const init = async () => {
   // axis 
 
   const xAxis = d3.axisBottom(xScale)
-                  .tickValues(xScale.domain().filter(e=>parseInt(e)%5==0))
-            
+                  .tickFormat((d,i) => {
+                    if(d.includes("Q2") || d.includes("Q3") || d.includes("Q4")){
+                      return null
+                    }
+
+                    if(parseInt(d) %5 !== 0){
+                      return null
+                    }
+                    return d.replace(/Q[0-9]/,"")
+                  })
+                  .tickSizeOuter(0)
+  
   const yAxis = d3.axisLeft(yScale)
+  .tickSizeOuter(0)
 
   // place x axis 
   svg.append("g")
@@ -66,56 +95,29 @@ const init = async () => {
     .attr('class','axis-left-label')
     .attr('transform', 'rotate(-90)')
 
-
-
-  const toolTipWidth = width*0.2;
-  const toolTipHeight = height*0.2;
-
-  const tooltipGroup = svg.append('g')
-
-  const tooltip = tooltipGroup
-    .append("rect")
-    .attr('class','tooltip')
-    .attr('width', toolTipWidth)
-    .attr('height', toolTipHeight)
-    .attr('fill','rgba(255,255,255,0.5)')
-    .attr('x', 16)
-    .attr('y', 16)
-    .attr('stroke-width', 1)
-
-    const tooltipGroupText = tooltipGroup.append("text")
-
-  tooltipGroupText 
-  .attr('x',toolTipWidth/2)
-  .attr('y',toolTipHeight/2)
-  .attr('transform', 'translate(-50%,-50%)')
+  const tooltip = d3.select("#tooltip")
+  const tooltipTitle = d3.select("#tooltip-title")
+  const tooltipDescription = d3.select("#tooltip-description")
 
   svg.selectAll(".bar")
-     .data(dataset)
+     .data(datasetProcessed)
      .join("rect")
      .on('mouseover', (_,d) => {
-      const year = d[0].split("-")[0];
-      tooltipGroupText
-      .text(`Year: ${year}\n GDP: ${d[1]} Billion`)
-       tooltipGroupText.attr('x', xScale(year) - 100)
-       tooltipGroupText.attr('y', height/2 + toolTipHeight /2)
-       tooltip.attr('x', xScale(year) - toolTipWidth/2)
-       tooltip.attr('y', height/2)
-      //  tooltip.attr('transform', `translate(${xScale(year)},${yScale(d[1])})`)
+      tooltipTitle.text(`Year: ${d.year}`)
+      tooltipDescription.text(`GDP: ${d.gdp}`)
+      tooltip.style('left', `${margin.left + xScale(d.year)}`)
+      tooltip.style('opacity',1);
      })
+     .on('mouseout', () => {
+      tooltip.style('opacity',0)
+    })
      .attr('class','bar')
-     .attr('data-date',d => d[0].split('-')[0])
-     .attr('data-gdp',d => d[1])
-     .attr("x",d => { 
-         const year = d[0].split("-")[0];
-         return xScale(year);
-     })
-     .attr("y", d => yScale(d[1]))
+     .attr('data-date',d => d.year)
+     .attr('data-gdp',d => d.gdp)
+     .attr("x",d => xScale(d.year))
+     .attr("y", d => yScale(d.gdp))
      .attr("width", xScale.bandwidth())
-     .attr("height", d => height - yScale(d[1]) - margin.bottom)
-  
- 
-
+     .attr("height", d => height - yScale(d.gdp) - margin.bottom)
 }
 
 init()
