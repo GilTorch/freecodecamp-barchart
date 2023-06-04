@@ -112,7 +112,7 @@ const init = async () => {
       tooltip.style('opacity',0)
     })
      .attr('class','bar')
-     .attr('data-date',d => d.year)
+     .attr('data-date',d => d.year.replace(/Q[0-9]/,""))
      .attr('data-gdp',d => d.gdp)
      .attr("x",d => xScale(d.year))
      .attr("y", d => yScale(d.gdp))
